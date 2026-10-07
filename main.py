@@ -361,9 +361,11 @@ def locate_dataset(provided_path: str) -> str:
         if path and os.path.exists(path):
             return os.path.abspath(path)
     raise FileNotFoundError(
-        f"Could not locate dataset archive! Tried:\n" +
+        f"Could not locate preprocessed dataset archive! Tried:\n" +
         "\n".join(f"  - {p}" for p in candidates) +
-        "\nPlease place cldrive_windowed_100hz.npz in the data/ folder or specify --data_path."
+        "\n\nTo generate this file from your raw CL-Drive download, run:\n" +
+        "  python preprocess_dataset.py --raw_dir /path/to/extracted/cldrive\n" +
+        "or place cldrive_windowed_100hz.npz directly into the data/ directory."
     )
 
 

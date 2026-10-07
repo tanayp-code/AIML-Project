@@ -97,19 +97,24 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Step 3: Dataset Placement
-Place the preprocessed windowed dataset file `cldrive_windowed_100hz.npz` inside the `data/` folder:
-```text
-official-version/
-├── data/
-│   └── cldrive_windowed_100hz.npz    <--- PLACE DATASET HERE
-├── results/
-├── main.py
-├── requirements.txt
-└── README.md
-```
+### Step 3: Dataset Preparation (Raw Download → Preprocessing)
 
-> *(Note: If this repo sits next to `unofficial-version`, `main.py` will automatically locate the dataset if already present).*
+You don't need any special directory setup. You can download the raw CL-Drive dataset and process it in one command:
+
+1. **Download & Extract CL-Drive:**
+   * Download the dataset from [Borealis Dataverse (DOI: 10.5683/SP3/JJ2YZZ)](https://doi.org/10.5683/SP3/JJ2YZZ).
+   * Extract the downloaded folder anywhere on your computer (e.g. `raw_cldrive/` containing `ECG/`, `EDA/`, `EEG/`, `Gaze/`, `Labels/`).
+
+2. **Run the Preprocessing Script:**
+   ```bash
+   python preprocess_dataset.py --raw_dir /path/to/extracted/raw_cldrive
+   ```
+   * What this does automatically:
+     * Discovers all 21 driver trials across 9 complexity levels.
+     * Synchronizes and resamples the 12 multi-rate channels to a uniform **100 Hz grid** (10-second windows = 1,000 time steps).
+     * Saves the preprocessed tensor archive to `data/cldrive_windowed_100hz.npz`.
+
+> *(Note: If you already have `cldrive_windowed_100hz.npz`, simply place it in the `data/` folder and skip this step).*
 
 ---
 
