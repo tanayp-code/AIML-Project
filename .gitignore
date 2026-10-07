@@ -1,0 +1,19 @@
+# Python bytecode & environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Large dataset archives & model checkpoints
+data/*.npz
+data/*.pt
+*.npz
+*.pt
+
+# System & Editor configs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.zed/
