@@ -10,6 +10,7 @@ data/*.npz
 data/*.pt
 *.npz
 *.pt
+!weights/*.pt
 
 # System & Editor configs
 .DS_Store

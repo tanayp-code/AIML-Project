@@ -177,3 +177,44 @@ Full per-fold metrics are automatically exported to `results/loso_evaluation_res
 | `--prune` / `--no-prune`| `True` | Filter bottom 3 toxic inverters from training pool |
 | `--folds` | `None` (all 21) | Limit fold count for quick checks |
 | `--device` | `cuda` | Hardware accelerator (`cuda` or `cpu`) |
+
+---
+
+## 8. Final Models and Live Terminal Demo
+
+### Train the final models (all subjects, no pruning)
+```bash
+python train_final.py                    # CL-Drive (21 drivers) and DROZY (14 subjects)
+python train_final.py --dataset cldrive  # one model only
+python train_final.py --device cpu       # 'auto' (default) uses the GPU and falls back to CPU if it fails
+```
+Weights are saved to `weights/cldrive_final.pt` and `weights/drozy_final.pt`. They contain the
+architecture config, calibration settings and class names, so the live demo needs nothing else.
+The accuracy printed at the end is the fit on the training data; unseen-driver accuracy comes from
+the LOSO benchmark (`main.py`).
+
+### Run the live demo
+```bash
+python live_demo.py                      # asks: model, device, subject, replay speed
+python live_demo.py --model cldrive --device auto --subject 1030 --speed 5
+python live_demo.py --model drozy --device cpu --subject 4 --interval 2 --plain
+```
+Processes started:
+* **Sensor simulators**, one per modality (CL-Drive: ECG, EDA, EEG, Gaze; DROZY: EEG, ECG, EOG, EMG, Face).
+  Each streams 0.2 s packets at 100 Hz, replaying a recorded session.
+* **Inference**, which buffers the streams, calibrates on the first 20 s (CL-Drive) or 60 s per
+  session (DROZY), and predicts on the latest 10 s window every `--interval` seconds.
+* **The launcher**, which draws the dashboard (class probabilities, level estimate, ground truth, history).
+
+`--device auto|cuda` checks the GPU with a real kernel launch and falls back to CPU on any driver
+or runtime error, including errors during loading or inference. The replayed subject was part of
+the final model's training data, so agreement with ground truth in the demo is not a test score.
+
+| Option | Default | Description |
+| :--- | :---: | :--- |
+| `--model` | asked | `cldrive` or `drozy` |
+| `--device` | asked (`auto`) | `auto`, `cuda` or `cpu` |
+| `--subject` | asked | Driver / subject to replay |
+| `--speed` | asked (`1`) | Replay speed, 1 = real time |
+| `--interval` | `1` | Seconds between updates |
+| `--plain` | off | One line per update instead of the dashboard |
